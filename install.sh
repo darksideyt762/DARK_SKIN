@@ -7,20 +7,40 @@ NC='\033[0m'
 
 echo -e "${GREEN}Installing DARK SKIN tool...${NC}"
 
-# Install dependencies
+# 1. Install dependencies
+echo -e "${GREEN}[1/4] Installing dependencies...${NC}"
 pkg update -y && pkg install -y git clang wget unzip pv figlet toilet
 
-# Clone repository
-git clone https://github.com/yourusername/DARK_SKIN.git $HOME/DARK_SKIN
+# 2. Clone repository
+echo -e "${GREEN}[2/4] Cloning repository...${NC}"
+if [ -d "$HOME/DARK_SKIN" ]; then
+    echo -e "${YELLOW}Directory exists. Updating...${NC}"
+    cd $HOME/DARK_SKIN
+    git pull
+else
+    git clone https://github.com/darksideyt762/DARK_SKIN.git $HOME/DARK_SKIN || {
+        echo -e "${RED}Failed to clone repository!${NC}"
+        exit 1
+    }
+    cd $HOME/DARK_SKIN
+fi
 
-# Compile the setup
-cd $HOME/DARK_SKIN
-
-# Set permissions
+# 3. Set permissions and create symlink
+echo -e "${GREEN}[3/4] Setting up permissions...${NC}"
 chmod +x setup darkskin pakskin
 
-# Create symbolic link
-ln -sf $HOME/DARK_SKIN/setup $PREFIX/bin/skin
+echo -e "${GREEN}[4/4] Creating symbolic link...${NC}"
+ln -sf $HOME/DARK_SKIN/setup $PREFIX/bin/skin || {
+    echo -e "${RED}Failed to create symbolic link!${NC}"
+    echo -e "${YELLOW}Trying with sudo...${NC}"
+    sudo ln -sf $HOME/DARK_SKIN/setup /usr/local/bin/skin
+}
 
-echo -e "${GREEN}Installation complete!${NC}"
-echo -e "Run the tool by typing: ${RED}skin${NC}"
+# Verify installation
+if [ -f "$PREFIX/bin/skin" ]; then
+    echo -e "${GREEN}Installation successful!${NC}"
+    echo -e "Run the tool by typing: ${RED}skin${NC}"
+else
+    echo -e "${RED}Installation failed!${NC}"
+    echo -e "Try running manually: ${RED}cd $HOME/DARK_SKIN && ./setup${NC}"
+fi
