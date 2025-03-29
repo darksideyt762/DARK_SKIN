@@ -9,7 +9,7 @@ NC='\033[0m'
 echo -e "${GREEN}Installing DARK SKIN tool...${NC}"
 
 # Clone or update repository
-echo -e "${GREEN}[1/3] Handling repository...${NC}"
+echo -e "${GREEN}[1/4] Handling repository...${NC}"
 if [ -d "$HOME/DARK_SKIN" ]; then
     echo -e "${YELLOW}Directory exists. Updating...${NC}"
     cd "$HOME/DARK_SKIN" || {
@@ -32,22 +32,35 @@ else
 fi
 
 # Set permissions
-echo -e "${GREEN}[2/3] Setting up permissions...${NC}"
+echo -e "${GREEN}[2/4] Setting up permissions...${NC}"
 chmod +x setup darkskin pakskin || {
     echo -e "${RED}Failed to set permissions!${NC}"
     exit 1
 }
 
-# Create symbolic link
-echo -e "${GREEN}[3/3] Creating symbolic link...${NC}"
+# Create symbolic links
+echo -e "${GREEN}[3/4] Creating symbolic links...${NC}"
 mkdir -p "$PREFIX/bin"
 ln -sf "$HOME/DARK_SKIN/setup" "$PREFIX/bin/skin" || {
-    echo -e "${RED}Failed to create symbolic link!${NC}"
+    echo -e "${RED}Failed to create main symlink!${NC}"
     exit 1
 }
 
+# Create symlink for pakskin in the same directory
+ln -sf "$HOME/DARK_SKIN/pakskin" "$PREFIX/bin/pakskin" || {
+    echo -e "${YELLOW}Warning: Could not create pakskin symlink${NC}"
+}
+
+# Add directory to PATH if not already present
+echo -e "${GREEN}[4/4] Setting up environment...${NC}"
+if [[ ":$PATH:" != *":$HOME/DARK_SKIN:"* ]]; then
+    echo 'export PATH="$PATH:$HOME/DARK_SKIN"' >> "$HOME/.bashrc"
+    source "$HOME/.bashrc"
+    echo -e "${GREEN}Added DARK_SKIN to PATH${NC}"
+fi
+
 # Verify installation
-if [ -f "$PREFIX/bin/skin" ]; then
+if [ -f "$PREFIX/bin/skin" ] && [ -f "$HOME/DARK_SKIN/pakskin" ]; then
     echo -e "${GREEN}Installation successful!${NC}"
     echo -e "Run the tool by typing: ${RED}skin${NC}"
 else
