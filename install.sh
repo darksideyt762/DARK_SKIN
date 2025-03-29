@@ -7,17 +7,11 @@ NC='\033[0m'
 
 echo -e "${GREEN}Installing DARK SKIN tool...${NC}"
 
-# 1. Install dependencies
-echo -e "${GREEN}[1/4] Installing dependencies...${NC}"
-pkg update -y && pkg install -y git clang wget unzip pv figlet toilet
-
 # 2. Clone repository
 echo -e "${GREEN}[2/4] Cloning repository...${NC}"
 if [ -d "$HOME/DARK_SKIN" ]; then
     echo -e "${YELLOW}Directory exists. Updating...${NC}"
     cd $HOME/DARK_SKIN
-    git pull
-else
     git clone https://github.com/darksideyt762/DARK_SKIN.git $HOME/DARK_SKIN || {
         echo -e "${RED}Failed to clone repository!${NC}"
         exit 1
